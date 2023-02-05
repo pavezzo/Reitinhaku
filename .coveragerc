@@ -1,0 +1,3 @@
+[run]
+source = reitinhaku
+omit = reitinhaku/**/__init__.py,reitinhaku/tests/**,reitinhaku/main.py,reitinhaku/ui/**,reitinhaku/utils/**
