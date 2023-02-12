@@ -7,5 +7,7 @@
 | 26.1. | 3    | projektin alustaminen, dijkstran algoritmi |
 | 29.1. | 4    | tkinter käyttöliittymän aloittaminen |
 | 03.2. | 3    | Luokka karttojen lukemiselle, testikattavuus, koodianalyysi
-| 05.2. | 4    | mahdollisuus vaihtaa karttaa, dokumentaatiota
-| yht.  | 19    | |
+| 05.2. | 4    | mahdollisuus vaihtaa karttaa, dokumentaatiota |
+| 11.2. | 6    | JPS implementointi ja teorian läpikäyntiä uudelleen |
+| 11.2. | 3    | JPS ja graaffinen testauskartta |
+| yht.  | 25    | |
