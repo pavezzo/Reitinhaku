@@ -55,3 +55,17 @@ class FileReader:
                 maps.append(map)
 
         return maps
+
+    def read_scen(self, name):
+        """
+            Lukee scen tiedostot testausta varten
+        """
+        file_path = f"data/{name}.map.scen"
+        with open(file_path, encoding="utf-8") as f:
+            scen = []
+            lines = f.readlines()
+            for i, line in enumerate(lines):
+                if i == 0:
+                    continue
+                scen.append(line.split())
+            return scen

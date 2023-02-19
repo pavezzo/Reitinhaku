@@ -9,5 +9,7 @@
 | 03.2. | 3    | Luokka karttojen lukemiselle, testikattavuus, koodianalyysi
 | 05.2. | 4    | mahdollisuus vaihtaa karttaa, dokumentaatiota |
 | 11.2. | 6    | JPS implementointi ja teorian läpikäyntiä uudelleen |
-| 11.2. | 3    | JPS ja graaffinen testauskartta |
-| yht.  | 25    | |
+| 12.2. | 3    | JPS ja graaffinen testauskartta |
+| 18.2. | 2    | Corner-ongelmien tutkimista
+| 19.2. | 6    | JPS reitin visuaalinen piirtäminen, testausskripti scen tiedostoille ja JPS debuggaamista |
+| yht.  | 33    | |
