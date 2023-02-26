@@ -15,7 +15,7 @@ class UI:
     def __init__(self):
         self._root = Tk()
         self._root.title("Reitinhaku")
-        self._root.geometry("1500x1500")
+        self._root.geometry("1500x1000")
 
         self._width = 1024
         self._height = 1024
@@ -80,6 +80,18 @@ class UI:
             command=self._handle_jps_button
         ).grid(row=6, column=0, sticky="nwe")
 
+        self._distance_label = Label(
+            master=frame,
+            text=""
+        )
+        self._distance_label.grid(row=7, sticky="nw")
+
+        self._time_label = Label(
+            master=frame,
+            text=""
+        )
+        self._time_label.grid(row=8, sticky="nw")
+        
         self._frame = frame
 
         self._canvas = Canvas(self._root, bg="black", width=1024, height=1024)
@@ -118,22 +130,24 @@ class UI:
             Käynnistää kartan ratkaisemisen dijkstran-algoritmilla
         """
         start, end = self._get_start_end_coordinates()
-        distance, path = self._dijkstra.solve(
+        distance, path, time = self._dijkstra.solve(
             start,
             end,
             self._current_map,
         )
 
         if distance:
-            print(distance)
+            self._distance_label["text"] = "Distance: " + str(distance)
+            self._time_label["text"] = "Took: " + str(time) + " seconds"
             self._draw_path(path)
 
     def _handle_jps_button(self):
         start, end = self._get_start_end_coordinates()
-        distance, path = self._jps.solve(start, end, self._current_map)
+        distance, path, time = self._jps.solve(start, end, self._current_map)
 
         if distance:
-            print(distance)
+            self._distance_label["text"] = "Distance: " + str(distance)
+            self._time_label["text"] = "Took: " + str(time) + " seconds"
             self._draw_path(path)
 
     def _get_start_end_coordinates(self):

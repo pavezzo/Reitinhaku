@@ -1,6 +1,6 @@
 from math import sqrt, inf
 from heapq import heappush, heappop
-
+import time
 
 class JPS:
     """
@@ -12,9 +12,13 @@ class JPS:
 
     def solve(self, start, end, map):
         """
-            Ratkaisee aloituspisteestä reitin lopetuspisteeseen,
-            ei toimi vielä kaikissa tapauksissa.
+            Ratkaisee aloituspisteestä reitin lopetuspisteeseen
         """
+        start_time = time.time()
+
+
+        if map[start[0]][start[1]] == "@":
+            return -1, []
 
         self._map = map
         self._end = end
@@ -38,8 +42,9 @@ class JPS:
             node = heappop(heap)
 
             if self.distances[end[0]][end[1]] != inf:
+                total_time = time.time() - start_time
                 path = self._construct_path(end, start, [end])
-                return self.distances[end[0]][end[1]], path
+                return self.distances[end[0]][end[1]], path, total_time
 
             current_pos = (node[1], node[2])
             for move in straight_moves:
@@ -54,7 +59,9 @@ class JPS:
                                              ][n[1]] + self._heuristic(n, end)
                     heappush(heap, (f_score, n[0], n[1]))
 
-    def _move_straight(self, current_pos, dir, mark_distances=True):
+        return -1, [] 
+
+    def _move_straight(self, current_pos, dir):
         """
             Etsii hyppäykselle sopivaa pistettä suoraa reittiä pitkin
         """
@@ -79,8 +86,7 @@ class JPS:
                 node[1] - dir[1]
             )
 
-            if mark_distances:
-                self.distances[node[0]][node[1]] = distance
+            self.distances[node[0]][node[1]] = distance
 
             if tuple(node) == self._end:
                 self.distances[node[0]][node[1]] = distance
@@ -88,13 +94,13 @@ class JPS:
 
             # liikutaan x akselilla
             if dir[0] == 0:
-                if (((node[0] + 1) < self.m_length) and
-                        (node[1] - dir[1] >= 0) and
-                        (node[1] - dir[1] < self.m_width)):
+                if (((node[0] + 1) < self.m_length) and                 
+                         (node[1] - dir[1] >= 0) and
+                         (node[1] - dir[1] < self.m_width)):
                     if (self._map[node[0]+1][node[1]-dir[1]] == "@"):
                         return node
 
-                if ((node[0] - 1 >= 0) and
+                if ((node[0] - 1 >= 0) and 
                         (node[1] - dir[1] >= 0) and
                         (node[1] - dir[1] < self.m_width)):
                     if (self._map[node[0]-1][node[1]-dir[1]] == "@"):
@@ -106,7 +112,7 @@ class JPS:
                     if (self._map[node[0]-dir[0]][node[1]+1] == "@"):
                         return node
 
-                if ((node[1] - 1 >= 0) and
+                if ((node[1] - 1 >= 0) and 
                         (node[0] - dir[0] >= 0) and
                         (node[0] - dir[0] < self.m_length)):
                     if (self._map[node[0]-dir[0]][node[1]-1] == "@"):
@@ -148,27 +154,29 @@ class JPS:
                 self.distances[node[0]][node[1]] = distance
                 return node
 
-            if self._move_straight(node, (dir[0], 0), True):
+            if self._move_straight(node, (dir[0], 0)):
                 return node
-            if self._move_straight(node, (0, dir[1]), True):
+            if self._move_straight(node, (0, dir[1])):
                 return node
 
     def _heuristic(self, start, end):
         """
             A* algoritmin käyttämä heuristiikkafunktio,
-            laskee diagonaalisen pituuden
+            laskee "oktiilisen" pituuden
         """
-        return max(abs(start[0]-end[0]), abs(start[1]-end[1]))
+        y_dist = abs(start[0] - end[0])
+        x_dist = abs(start[1] - end[1])
+        return y_dist + x_dist + (sqrt(2)-2)*min(y_dist, x_dist)            
+        
+        # return max(abs(start[0]-end[0]), abs(start[1]-end[1]))
 
     def _construct_path(self, start, end, path):
         """
-            Luo ratkaistun reitin rekursiolla
+            Luo ratkaistun reitin
         """
 
-        if start == end:
-            return path
-
-        path.append(self._parents[start[0]][start[1]])
-        self._construct_path(
-            self._parents[start[0]][start[1]], end, path)
+        while start != end:
+            path.append(self._parents[start[0]][start[1]])
+            start = self._parents[start[0]][start[1]]
+        
         return path

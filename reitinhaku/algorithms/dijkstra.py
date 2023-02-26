@@ -1,6 +1,6 @@
 from math import sqrt, inf
 from heapq import heappush, heappop
-
+import time
 
 class Dijkstra:
     """
@@ -15,6 +15,7 @@ class Dijkstra:
             Löytää kartalta aloituspisteestä reitin lopetuspisteeseen
             Jos ei löydä niin palauttaa tyhjän reitin ja -1 pituuden
         """
+        start_time = time.time()
 
         length = len(map)
         width = len(map[0])
@@ -38,9 +39,10 @@ class Dijkstra:
             if (node[1], node[2]) in handled or map[node[1]][node[2]] != ".":
                 continue
             if (node[1], node[2]) == end:
+                total_time = time.time() - start_time
                 self.path = self._construct_path(end, start, parents, [end])
                 self.path.reverse()
-                return node[0], self.path
+                return node[0], self.path, total_time
 
             handled[(node[1], node[2])] = True
 
@@ -75,12 +77,11 @@ class Dijkstra:
 
     def _construct_path(self, start, end, parents, path):
         """
-            Luo ratkaistun reitin rekursiolla
+            Luo ratkaistun reitin
         """
 
-        if start == end:
-            return path
-
-        path.append(parents[start[0]][start[1]])
-        self._construct_path(parents[start[0]][start[1]], end, parents, path)
+        while start != end:
+            path.append(parents[start[0]][start[1]])
+            start = parents[start[0]][start[1]]
+        
         return path
