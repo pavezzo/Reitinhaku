@@ -2,6 +2,7 @@ from math import sqrt, inf
 from heapq import heappush, heappop
 import time
 
+
 class JPS:
     """
         Luokka, joka sisältää Jump point search -algoritmin
@@ -16,9 +17,8 @@ class JPS:
         """
         start_time = time.time()
 
-
         if map[start[0]][start[1]] == "@":
-            return -1, []
+            return -1, [], -1
 
         self._map = map
         self._end = end
@@ -59,7 +59,7 @@ class JPS:
                                              ][n[1]] + self._heuristic(n, end)
                     heappush(heap, (f_score, n[0], n[1]))
 
-        return -1, [] 
+        return -1, [], -1
 
     def _move_straight(self, current_pos, dir):
         """
@@ -94,13 +94,13 @@ class JPS:
 
             # liikutaan x akselilla
             if dir[0] == 0:
-                if (((node[0] + 1) < self.m_length) and                 
-                         (node[1] - dir[1] >= 0) and
-                         (node[1] - dir[1] < self.m_width)):
+                if (((node[0] + 1) < self.m_length) and
+                    (node[1] - dir[1] >= 0) and
+                        (node[1] - dir[1] < self.m_width)):
                     if (self._map[node[0]+1][node[1]-dir[1]] == "@"):
                         return node
 
-                if ((node[0] - 1 >= 0) and 
+                if ((node[0] - 1 >= 0) and
                         (node[1] - dir[1] >= 0) and
                         (node[1] - dir[1] < self.m_width)):
                     if (self._map[node[0]-1][node[1]-dir[1]] == "@"):
@@ -112,7 +112,7 @@ class JPS:
                     if (self._map[node[0]-dir[0]][node[1]+1] == "@"):
                         return node
 
-                if ((node[1] - 1 >= 0) and 
+                if ((node[1] - 1 >= 0) and
                         (node[0] - dir[0] >= 0) and
                         (node[0] - dir[0] < self.m_length)):
                     if (self._map[node[0]-dir[0]][node[1]-1] == "@"):
@@ -166,8 +166,8 @@ class JPS:
         """
         y_dist = abs(start[0] - end[0])
         x_dist = abs(start[1] - end[1])
-        return y_dist + x_dist + (sqrt(2)-2)*min(y_dist, x_dist)            
-        
+        return y_dist + x_dist + (sqrt(2)-2)*min(y_dist, x_dist)
+
         # return max(abs(start[0]-end[0]), abs(start[1]-end[1]))
 
     def _construct_path(self, start, end, path):
@@ -178,5 +178,5 @@ class JPS:
         while start != end:
             path.append(self._parents[start[0]][start[1]])
             start = self._parents[start[0]][start[1]]
-        
+
         return path

@@ -2,6 +2,7 @@ from math import sqrt, inf
 from heapq import heappush, heappop
 import time
 
+
 class Dijkstra:
     """
         Luokka, joka sisältää dijkstran-algoritmin
@@ -73,7 +74,7 @@ class Dijkstra:
                         else:
                             heappush(heap, (node[0]+sqrt(2), next[0], next[1]))
 
-        return -1, []
+        return -1, [], -1
 
     def _construct_path(self, start, end, parents, path):
         """
@@ -83,5 +84,5 @@ class Dijkstra:
         while start != end:
             path.append(parents[start[0]][start[1]])
             start = parents[start[0]][start[1]]
-        
+
         return path
