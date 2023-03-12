@@ -15,4 +15,5 @@
 | 23.2. | 2    | JPS toimimaan |
 | 25.2. | 2    | yleistä refaktorointia |
 | 26.2. | 6    | testausta, dokumentointia |
-| yht.  | 43    | |
+| 12.3. | 4    | dokumentaatio kuntoon, loppupalautus |
+| yht.  | 47    | |
