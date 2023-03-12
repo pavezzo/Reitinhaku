@@ -1,5 +1,5 @@
 from tkinter import (
-    Tk, Frame, Label, Button, Canvas, Entry, OptionMenu, StringVar
+    Tk, Frame, Label, Button, Canvas, Entry, OptionMenu, StringVar, constants
 )
 from PIL import ImageTk, Image
 from algorithms.dijkstra import Dijkstra
@@ -15,7 +15,11 @@ class UI:
     def __init__(self):
         self._root = Tk()
         self._root.title("Reitinhaku")
-        self._root.geometry("1500x1000")
+
+        self._screen_width = self._root.winfo_screenwidth()
+        self._screen_height = self._root.winfo_screenheight()
+
+        self._root.geometry(f"{self._screen_width}x{self._screen_height}")
 
         self._width = 1024
         self._height = 1024
@@ -26,6 +30,7 @@ class UI:
         self._custom_map = False
 
         self._path = None
+        self._visited = None
 
     def start(self):
         """
@@ -33,7 +38,7 @@ class UI:
         """
 
         frame = Frame(self._root)
-        frame.grid(row=0, column=0, sticky="n")
+        # frame.grid(row=0, column=0, sticky="n")
 
         map_names = self._filereader.read_map_names()
         map_names.append("Custom")
@@ -91,12 +96,25 @@ class UI:
             text=""
         )
         self._time_label.grid(row=8, sticky="nw")
-        
+
+        self._visited_label = Label(
+            master=frame,
+            text=""
+        )
+        self._visited_label.grid(row=9, sticky="nw")
+
         self._frame = frame
-
-        self._canvas = Canvas(self._root, bg="black", width=1024, height=1024)
-        self._canvas.grid(row=0, column=1)
-
+        self._frame.pack(side=constants.LEFT, anchor="nw")
+        # self._frame.pack(anchor="nw")
+        self._canvas = Canvas(
+            self._root,
+            bg="black",
+            width=self._screen_width//2,
+            height=self._screen_height
+        )
+        # self._canvas.grid(row=0, column=1)
+        # self._root.columnconfigure(1, weight=1)
+        self._canvas.pack(expand=1, fill=constants.BOTH, side=constants.RIGHT, anchor="ne")
         # image = Image.open(f"kuvat/{map_names[0]}.png")
         # image.resize((256,256), Image.ANTIALIAS)
         # image = ImageTk.PhotoImage(image)
@@ -117,20 +135,31 @@ class UI:
         """
             Piirtää algoritmin palauttaman polun kartan päälle
         """
-        if self._path:
-            for y, x in self._path:
-                self._canvas.itemconfig(self._rectangles[y][x], fill="white")
         self._path = path
 
         for y, x in path:
             self._canvas.itemconfig(self._rectangles[y][x], fill="red")
+
+    def _draw_visited(self, visited):
+        if self._path:
+            for y, x in self._path:
+                if y < self._map_height and x < self._map_width:
+                    self._canvas.itemconfig(self._rectangles[y][x], fill="white")
+        if self._visited:
+            for y, x in self._visited:
+                if y < self._map_height and x < self._map_width:
+                    self._canvas.itemconfig(self._rectangles[y][x], fill="white")
+        self._visited = visited
+
+        for y, x in visited:
+            self._canvas.itemconfig(self._rectangles[y][x], fill="blue")
 
     def _handle_dijkstra_button(self):
         """
             Käynnistää kartan ratkaisemisen dijkstran-algoritmilla
         """
         start, end = self._get_start_end_coordinates()
-        distance, path, time = self._dijkstra.solve(
+        distance, path, time, visited = self._dijkstra.solve(
             start,
             end,
             self._current_map,
@@ -139,15 +168,22 @@ class UI:
         if distance:
             self._distance_label["text"] = "Distance: " + str(distance)
             self._time_label["text"] = "Took: " + str(time) + " seconds"
+            self._visited_label["text"] = "Visited: " + \
+                str(len(visited)) + " nodes"
+            self._draw_visited(visited)
             self._draw_path(path)
 
     def _handle_jps_button(self):
         start, end = self._get_start_end_coordinates()
-        distance, path, time = self._jps.solve(start, end, self._current_map)
+        distance, path, time, visited = self._jps.solve(
+            start, end, self._current_map)
 
         if distance:
             self._distance_label["text"] = "Distance: " + str(distance)
             self._time_label["text"] = "Took: " + str(time) + " seconds"
+            self._visited_label["text"] = "Visited: " + \
+                str(len(visited)) + " nodes"
+            self._draw_visited(visited)
             self._draw_path(path)
 
     def _get_start_end_coordinates(self):
@@ -189,7 +225,6 @@ class UI:
 
         box_w = self._canvas.winfo_width() / self._map_width
         box_h = self._canvas.winfo_height() / self._map_height
-
         self._rectangles = [[None for _ in range(
             self._map_width)] for _ in range(self._map_height)]
 
@@ -212,8 +247,8 @@ class UI:
                     )
                 self._rectangles[i][j] = rec
 
-        self._heigth_scalar = self._height / self._map_height
-        self._width_scalar = self._width / self._map_width
+        self._heigth_scalar = self._canvas.winfo_height() / self._map_height
+        self._width_scalar = self._canvas.winfo_width() / self._map_width
 
     def _draw_custom_map(self):
         """
@@ -231,9 +266,11 @@ class UI:
                 )
                 self._rectangles[i][j] = rec
 
-        self._heigth_scalar = self._height / 10
-        self._width_scalar = self._width / 10
+        self._heigth_scalar = self._canvas.winfo_height() / 10
+        self._width_scalar = self._canvas.winfo_width() / 10
         self._current_map = [["." for _ in range(10)] for _ in range(10)]
+        self._map_height = 10
+        self._map_width = 10
 
     def _draw_obstacle_to_custom_map(self, x, y):
         """

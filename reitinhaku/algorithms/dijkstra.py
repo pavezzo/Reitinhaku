@@ -42,8 +42,9 @@ class Dijkstra:
             if (node[1], node[2]) == end:
                 total_time = time.time() - start_time
                 self.path = self._construct_path(end, start, parents, [end])
-                self.path.reverse()
-                return node[0], self.path, total_time
+                visited = [(x, y) for x, row in enumerate(distances)
+                           for y, val in enumerate(row) if val != inf]
+                return node[0], self.path, total_time, visited
 
             handled[(node[1], node[2])] = True
 
@@ -74,7 +75,7 @@ class Dijkstra:
                         else:
                             heappush(heap, (node[0]+sqrt(2), next[0], next[1]))
 
-        return -1, [], -1
+        return -1, [], -1, []
 
     def _construct_path(self, start, end, parents, path):
         """

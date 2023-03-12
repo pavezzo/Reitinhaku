@@ -18,7 +18,7 @@ class JPS:
         start_time = time.time()
 
         if map[start[0]][start[1]] == "@":
-            return -1, [], -1
+            return -1, [], -1, []
 
         self._map = map
         self._end = end
@@ -44,7 +44,9 @@ class JPS:
             if self.distances[end[0]][end[1]] != inf:
                 total_time = time.time() - start_time
                 path = self._construct_path(end, start, [end])
-                return self.distances[end[0]][end[1]], path, total_time
+                visited = [(x, y) for x, row in enumerate(self.distances)
+                           for y, val in enumerate(row) if val != inf]
+                return self.distances[end[0]][end[1]], path, total_time, visited
 
             current_pos = (node[1], node[2])
             for move in straight_moves:
@@ -59,7 +61,7 @@ class JPS:
                                              ][n[1]] + self._heuristic(n, end)
                     heappush(heap, (f_score, n[0], n[1]))
 
-        return -1, [], -1
+        return -1, [], -1, []
 
     def _move_straight(self, current_pos, dir):
         """
